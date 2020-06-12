@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CourseForm from "./CourseForm";
 import * as courseAPI from "../api/courseApi";
 import { toast } from "react-toastify";
@@ -13,6 +13,12 @@ function ManageCourse(props) {
     authorId: null,
     category: "",
   });
+
+  useEffect(() => {
+    const slug = props.match.params.slug;
+    if (slug)
+      courseAPI.getCourseBySlug(slug).then((_course) => setCourse(_course));
+  }, [props.match.params.slug]);
 
   return (
     <>
@@ -39,7 +45,7 @@ function ManageCourse(props) {
     let _errors = {};
 
     if (!course.title) _errors.title = "Title is required.";
-    if (!course.authorId) _errors.authorId = "Author Id is required.";
+    if (!course.authorId) _errors.authorId = "Author is required.";
     if (!course.category) _errors.category = "Category is required.";
 
     setErrors(_errors);

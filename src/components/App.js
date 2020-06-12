@@ -6,7 +6,6 @@ import CoursesPage from "./CoursesPage";
 import PageNotFound from "./PageNotFound";
 import { Route, Switch } from "react-router-dom";
 import ManageCourse from "./ManageCourse";
-import CourseForm from "./CourseForm";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
