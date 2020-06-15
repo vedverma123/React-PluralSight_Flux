@@ -24,11 +24,8 @@ function CourseForm(props) {
         value={props.course.authorId | ""}
         onChange={props.onChange}
         error={props.errors.authorId}
-      >
-        <option value="" />
-        <option value="1">Test Author1 </option>
-        <option value="2">Test Author2 </option>
-      </SelectInput>
+        options={props.authors}
+      ></SelectInput>
 
       <TextInput
         id="category"
@@ -48,8 +45,9 @@ function CourseForm(props) {
 CourseForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
-
+  errors: PropTypes.object.isRequired,
   course: PropTypes.object.isRequired,
+  authors: PropTypes.array.isRequired,
 };
 
 export default CourseForm;

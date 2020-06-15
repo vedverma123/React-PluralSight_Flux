@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
 import CourseForm from "./CourseForm";
-import * as courseAPI from "../api/courseApi";
+import courseStore from "../stores/courseStore";
+import authorStore from "../stores/authorStore";
 import { toast } from "react-toastify";
+import * as courseActions from "../actions/courseActions";
+import * as authorActions from "../actions/authorActions";
+import { Redirect } from "react-router-dom";
 
 function ManageCourse(props) {
+  const [slug, setSlug] = useState({});
+  const [redirect, setRedirect] = useState(false);
   const [errors, setErrors] = useState({});
-
+  const [courses, setCourses] = useState(courseStore.getCourses());
+  const [authors, setAuthors] = useState(authorStore.getAuthors());
   const [course, setCourse] = useState({
     id: null,
     slug: "",
@@ -15,15 +22,40 @@ function ManageCourse(props) {
   });
 
   useEffect(() => {
-    const slug = props.match.params.slug;
-    if (slug)
-      courseAPI.getCourseBySlug(slug).then((_course) => setCourse(_course));
-  }, [props.match.params.slug]);
+    courseStore.addChangeListener(onChange);
+    authorStore.addChangeListener(onChange);
 
-  return (
+    if (authors.length === 0) authorActions.loadAuthors();
+
+    const _slug = props.match.params.slug;
+    if (courses.length === 0) courseActions.loadCourse();
+    else if (_slug) {
+      setSlug(_slug);
+      let course = courseStore.getCourseBySlug(_slug);
+      if (course) setCourse(course);
+      else setRedirect(true);
+    }
+
+    function removeListeners() {
+      courseStore.removeChangeListener(onChange);
+      authorStore.removeChangeListener(onChange);
+    }
+
+    return () => removeListeners();
+  }, [props.match.params.slug, courses.length, authors.length]);
+
+  function onChange() {
+    setCourses(courseStore.getCourses());
+    setAuthors(authorStore.getAuthors());
+  }
+
+  return redirect ? (
+    <Redirect to={"/" + slug} />
+  ) : (
     <>
       <h2>Manage course</h2>
       <CourseForm
+        authors={authors}
         course={course}
         errors={errors}
         onChange={handleChange}
@@ -55,7 +87,7 @@ function ManageCourse(props) {
   function handleSubmit(event) {
     event.preventDefault();
     if (!isFormValid()) return;
-    courseAPI.saveCourse(course).then(() => {
+    courseActions.saveCourse(course).then(() => {
       props.history.push("/courses");
       toast.success("Course Saved.");
     });

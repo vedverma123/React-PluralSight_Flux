@@ -12,7 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <div className="container-fluid">
-      <ToastContainer timeout={3000} hideProgressBar />
+      <ToastContainer timeout={2000} hideProgressBar />
       <Header />
       <Switch>
         <Route exact path="/" component={HomePage}></Route>
